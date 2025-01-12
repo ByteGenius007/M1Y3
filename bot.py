@@ -26,7 +26,7 @@ def send_random_fact(message):
     random_fact = random.choice(facts)
     bot.reply_to(message, f"Твой случайный факт: {random_fact}")
 
-@bot.message_handler(commands=['ban'])
+@bot.message_handler(commands=['ban1'])
 def ban(message):
     if message.reply_to_message:
         chat_id = message.chat.id 
@@ -36,14 +36,32 @@ def ban(message):
             bot.reply_to(message, "Невозможно забанить администратора.")
         else:
             bot.ban_chat_member(chat_id, user_id)
+            bot.reply_to(message, "Пользователь был забанен.")
     else:
         bot.reply_to(message, "Эта команда должна быть использована в ответ на сообщение пользователя, которого вы хотите забанить.")
 
+@bot.message_handler(content_types=['new_chat_members'])
+def make_some(message):
+    bot.send_message(message.chat.id, 'Хз чо писать!')
+    bot.approve_chat_join_request(message.chat.id, message.from_user.id)
 
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
 @bot.message_handler(func=lambda message: True)
 def echo_message(message):
-    bot.reply_to(message, message.text)
+    if "https://" in message.text:
+        # Сохраняем информацию о пользователе
+        user_id = message.from_user.id
+        chat_id = message.chat.id
+
+        # Проверяем статус пользователя перед баном
+        user_status = bot.get_chat_member(chat_id, user_id).status
+        if user_status == 'administrator' or user_status == 'creator':
+            bot.reply_to(message, "Невозможно забанить администратора.")
+        else:
+            bot.ban_chat_member(chat_id, user_id)
+            bot.reply_to(message, "Вы были забанены за отправку запрещённых ссылок.")
+    else:
+        bot.reply_to(message, message.text)
 
 
 bot.infinity_polling()
