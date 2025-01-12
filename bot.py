@@ -40,6 +40,13 @@ def ban(message):
     else:
         bot.reply_to(message, "Эта команда должна быть использована в ответ на сообщение пользователя, которого вы хотите забанить.")
 
+@bot.message_handler(commands=['info'])
+def info(message):
+    user_id = message.from_user.id
+    username = message.from_user.username or "No username"
+    bot.reply_to(message, f"Ваш ID: {user_id}, Ваш username: {username}")
+
+
 @bot.message_handler(content_types=['new_chat_members'])
 def make_some(message):
     bot.send_message(message.chat.id, 'Хз чо писать!')
