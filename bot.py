@@ -10,7 +10,7 @@ bot = telebot.TeleBot(API_TOKEN)
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
-    bot.reply_to(message, "Привет, хз че писать. Хз че писать, но вы лайкайте!")
+    bot.reply_to(message, "Привет, хз че писать. Но вы лайкайте!")
 
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['random'])
@@ -18,6 +18,19 @@ def send_random_number(message):
     random_number = random.randint(1, 100)
     bot.reply_to(message, f"Твое случайное число: {random_number}")
 
+@bot.message_handler(commands=['kick'])
+def kick(message):
+    if message.reply_to_message:
+        chat_id = message.chat.id
+        user_id = message.reply_to_message.from_user.id
+        user_status = bot.get_chat_member(chat_id, user_id).status
+        if user_status == 'administrator' or user_status == 'creator':
+            bot.reply_to(message, "Невозможно выгнать администратора.")
+        else:
+            bot.kick_chat_member(chat_id, user_id)
+            bot.reply_to(message, "Пользователь был выгнан из чата.")
+    else:
+        bot.reply_to(message, "Эта команда должна быть использована в ответ на сообщение пользователя, которого вы хотите выгнать.")
 
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['fact'])
