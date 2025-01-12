@@ -55,9 +55,14 @@ def ban(message):
 
 @bot.message_handler(commands=['info'])
 def info(message):
-    user_id = message.from_user.id
-    username = message.from_user.username or "No username"
-    bot.reply_to(message, f"Ваш ID: {user_id}, Ваш username: {username}")
+    if message.reply_to_message:
+        user_id = message.reply_to_message.from_user.id
+        username = message.reply_to_message.from_user.username or "No username"
+        bot.reply_to(message, f"Его ID: {user_id}, Его username: {username}")
+    else:
+        user_id = message.from_user.id
+        username = message.from_user.username or "No username"
+        bot.reply_to(message, f"Ваш ID: {user_id}, Ваш username: {username}")
 
 
 @bot.message_handler(content_types=['new_chat_members'])
